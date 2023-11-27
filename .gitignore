@@ -38,3 +38,6 @@ wheels/
 *.egg
 *.manifest
 *.spec
+
+# DS_Store
+.DS_Store
