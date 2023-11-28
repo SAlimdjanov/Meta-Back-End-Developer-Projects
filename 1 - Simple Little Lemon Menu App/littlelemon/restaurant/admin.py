@@ -4,5 +4,7 @@ admin.py
 """
 
 from django.contrib import admin
+from .models import Menu
 
-# Register your models here.
+# Register menu model
+admin.site.register(Menu)

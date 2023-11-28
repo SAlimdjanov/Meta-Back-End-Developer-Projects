@@ -13,7 +13,9 @@ class BookingForm(ModelForm):
     Args:
         ModelForm (django.forms): Template class to create HTML forms from django models
     """
+
     class Meta:
         """Meta Class"""
+
         model = Booking
         fields = "__all__"
