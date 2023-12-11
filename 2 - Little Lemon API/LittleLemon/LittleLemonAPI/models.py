@@ -15,6 +15,11 @@ class Category(models.Model):
     slug = models.SlugField()
     title = models.CharField(max_length=255, db_index=True)
 
+    objects = models.Manager()
+
+    def __str__(self) -> str:
+        return str(self.title)
+
 
 class MenuItem(models.Model):
     """Contains information about a particular menu item"""
@@ -23,6 +28,11 @@ class MenuItem(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2, db_index=True)
     featured = models.BooleanField(db_index=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
+
+    objects = models.Manager()
+
+    def __str__(self) -> str:
+        return str(self.title)
 
 
 class Cart(models.Model):
@@ -35,10 +45,15 @@ class Cart(models.Model):
     unit_price = models.DecimalField(max_digits=6, decimal_places=2)
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
+    objects = models.Manager()
+
     class Meta:
         """metadata: There can only be one menu item entry for a specific user"""
 
         unique_together = ("menu_item", "user")
+
+    def __str__(self) -> str:
+        return str(self.user + self.menu_item)
 
 
 class Order(models.Model):
@@ -52,6 +67,11 @@ class Order(models.Model):
     total_price = models.DecimalField(max_digits=6, decimal_places=2)
     date = models.DateField(db_index=True)
 
+    objects = models.Manager()
+
+    def __str__(self) -> str:
+        return str(self.user + self.date)
+
 
 class OrderItem(models.Model):
     """All items from the cart will be moved here with upon placement of an order. After that, they
@@ -63,7 +83,12 @@ class OrderItem(models.Model):
     unit_price = models.DecimalField(max_digits=6, decimal_places=2)
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
+    objects = models.Manager()
+
     class Meta:
         """metadata: An order can have one menu item with varying quantity"""
 
         unique_together = ("order", "menu_item")
+
+    def __str__(self) -> str:
+        return str(self.menu_item, self.quantity)
