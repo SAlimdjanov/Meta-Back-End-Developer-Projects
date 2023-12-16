@@ -1,10 +1,38 @@
 # Little Lemon API Project
 
-A fully functioning API project for a hypothetical restaurant called Little Lemon. Client application developers can use the APIs to develop web and mobile applications. People with different roles are able to browse, add and edit menu items, place orders, browse orders, assign delivery crew to orders and finally deliver the orders. (Work in Progress)
+A fully functioning API project for a hypothetical restaurant called Little Lemon. Client application developers can use the APIs to develop web and mobile applications. People with different roles are able to browse, add and edit menu items, place orders, browse orders, assign delivery crew to orders and finally deliver the orders.
+
+## Functionality
+
+The following actions can be performed while using this API:
+
+-   The admin can assign users to the manager group (Done)
+-   You can access the manager group with an admin token
+-   The admin can add menu items (Done)
+-   The admin can add categories (Done)
+-   Managers can log in
+-   Managers can update the item of the day
+-   Managers can assign users to the delivery crew
+-   Managers can assign orders to the delivery crew
+-   The delivery crew can access orders assigned to them
+-   The delivery crew can update an order as delivered
+-   Customers can register
+-   Customers can log in using their username and password and get access tokens
+-   Customers can browse all categories
+-   Customers can browse all the menu items at once
+-   Customers can browse menu items by category
+-   Customers can paginate menu items
+-   Customers can sort menu items by price
+-   Customers can add menu items to the cart
+-   Customers can access previously added items in the cart
+-   Customers can place orders
+-   Customers can browse their own orders
 
 ## Implemented Endpoints
 
-**User Endpoints:**
+This section outlines the accessible API endpoints:
+
+### User Endpoints:
 
 Permissions: [No Role Required]
 
@@ -15,7 +43,7 @@ Permissions: [Valid Users]
 -   `/api/users/users/me` (GET) - Displays only current user details
 -   `/token/login` (POST) - Generates access tokens that can be used in other API calls (only for valid users)
 
-**Menu Item Endpoints:**
+### Menu Item Endpoints:
 
 Permissions: [Customers, Delivery Crew]
 
@@ -32,7 +60,7 @@ Permissions: [Managers]
 -   `/api/menu-items/{menuItem}` (PUT, PATCH) - Updates a single menu item
 -   `/api/menu-items/{menuItem}` (DELETE) - Deletes menu item
 
-**User Group Management Endpoints:**
+### User Group Management Endpoints:
 
 Permissions: [Managers]
 
@@ -42,7 +70,7 @@ Permissions: [Managers]
 -   `api/groups/delivery-crew/users` (GET) - Assign user in payload to the delivery crew group (201 CREATED)
 -   `api/groups/delivery-crew/users/{userID}` (DELETE) - 200 OK if deleted. If not found, returns 404
 
-**Cart Endpoints:**
+### Cart Endpoints:
 
 Permissions: [Customer]
 
@@ -51,7 +79,7 @@ Permissions: [Customer]
     these items
 -   `/api/cart/menu-items` (DELETE) - Deletes all menu items added by the current user token
 
-**Order Management Endpoints:**
+### Order Management Endpoints:
 
 Permissions: [Customer]
 

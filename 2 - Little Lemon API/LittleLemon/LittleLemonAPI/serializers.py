@@ -6,41 +6,52 @@ serializers.py
 
 from rest_framework import serializers
 from django.contrib.auth.models import User
+
 from . import models
 
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for 'User'"""
 
-    user = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), default=serializers.CurrentUserDefault()
-    )
+    class Meta:
+        """Serializer metadata"""
+
+        model = User
+        fields = ["id", "username", "email", "password"]
+
+
+class SingleUserSerializer(serializers.ModelSerializer):
+    """Serializer for endpoint 'users/me'"""
 
     class Meta:
         """Serializer metadata"""
 
         model = User
-        fields = ["user", "username", "email", "password"]
+        fields = ["id", "username", "email", "password"]
+
+
+class MenuItemSerializer(serializers.ModelSerializer):
+    """Serializer class for the 'MenuItem' model"""
+
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=models.Category.objects.all()
+    )
+
+    class Meta:
+        """Serializer metadata"""
+
+        model = models.MenuItem
+        fields = ["id", "category", "title", "price", "featured"]
 
 
 class CategorySerializer(serializers.ModelSerializer):
     """Serializer class for the 'Category' model"""
 
     class Meta:
-        """Serializer metadata"""
+        """Serializer metadate"""
 
         model = models.Category
-        fields = ["slug", "title"]
-
-
-class MenuItemSerializer(serializers.ModelSerializer):
-    """Serializer class for the 'MenuItem' model"""
-
-    class Meta:
-        """Serializer metadata"""
-
-        model = models.MenuItem
-        fields = ["title", "price", "featured", "category"]
+        fields = ["id", "slug", "title"]
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -51,23 +62,34 @@ class CartSerializer(serializers.ModelSerializer):
 
         model = models.Cart
         fields = ["user", "menu_item", "quantity", "unit_price", "price"]
-
-
-class OrderSerializer(serializers.ModelSerializer):
-    """Serializer class for the 'Order' model"""
-
-    class Meta:
-        """Serializer metadata"""
-
-        model = models.Order
-        fields = ["user", "delivery_crew", "delivery_status", "total_price", "date"]
+        extra_kwargs = {"price": {"read_only": True}}
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    """Serializer class for the 'Cart' model"""
+    """Serializer class for the 'OrderItem' model"""
 
     class Meta:
         """Serializer metadata"""
 
         model = models.OrderItem
-        fields = ["order", "menu_item", "quantity", "unit_price", "price"]
+        fields = "__all__"
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    """Serializer class for the 'Order' model"""
+
+    order_item = OrderItemSerializer(many=True, read_only=True, source="order")
+
+    class Meta:
+        """Serializer metadata"""
+
+        model = models.Order
+        fields = [
+            "id",
+            "user",
+            "order_item",
+            "delivery_crew",
+            "delivery_status",
+            "total_price",
+            "date",
+        ]
