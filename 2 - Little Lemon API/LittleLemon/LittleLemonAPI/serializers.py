@@ -19,6 +19,19 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "username", "email", "password"]
 
+    def create(self, validated_data):
+        """Ensure created password is hashed"""
+        password = validated_data.pop("password", None)
+        instance = self.Meta.model(**validated_data)
+
+        instance.is_active = True
+        if password is not None:
+            instance.set_password(password)
+
+        instance.save()
+
+        return instance
+
 
 class SingleUserSerializer(serializers.ModelSerializer):
     """Serializer for endpoint 'users/me'"""
@@ -62,7 +75,6 @@ class CartSerializer(serializers.ModelSerializer):
 
         model = models.Cart
         fields = ["user", "menu_item", "quantity", "unit_price", "price"]
-        extra_kwargs = {"price": {"read_only": True}}
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -93,3 +105,9 @@ class OrderSerializer(serializers.ModelSerializer):
             "total_price",
             "date",
         ]
+
+
+class GroupSerializer(serializers.Serializer):
+    """Facilitates input of a username to add to a group"""
+
+    username = serializers.CharField()

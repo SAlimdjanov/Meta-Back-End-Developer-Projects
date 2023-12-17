@@ -6,10 +6,10 @@ A fully functioning API project for a hypothetical restaurant called Little Lemo
 
 The following actions can be performed while using this API:
 
--   The admin can assign users to the manager group (Done)
+-   The admin can assign users to the manager group
 -   You can access the manager group with an admin token
--   The admin can add menu items (Done)
--   The admin can add categories (Done)
+-   The admin can add menu items
+-   The admin can add categories
 -   Managers can log in
 -   Managers can update the item of the day
 -   Managers can assign users to the delivery crew
@@ -36,12 +36,12 @@ This section outlines the accessible API endpoints:
 
 Permissions: [No Role Required]
 
--   `/api/users` (POST) - Creates a new user with name, email, and password
+-   `/api/create-user` (POST) - Creates a new user with name, email, and password
 
 Permissions: [Valid Users]
 
--   `/api/users/users/me` (GET) - Displays only current user details
--   `/token/login` (POST) - Generates access tokens that can be used in other API calls (only for valid users)
+-   `/auth/users/me` (GET) - Displays only current user details
+-   `/auth/token/login` (POST) - Generates access tokens that can be used in other API calls (only for valid users)
 
 ### Menu Item Endpoints:
 
@@ -97,3 +97,7 @@ Permissions: [Delivery Crew]
 
 -   `/api/orders` (GET): Returns all orders with items assigned to the delivery crew
 -   `/api/orders/{orderId}` (PATCH): Update delivery status (0 undelivered, 1 delivered)
+
+## Note
+
+Use Insomnia to test is much more effective than using the browsable API view. Just open the database to view item/user IDs, for use as keys when making requests as they are the primary keys of their respective models.

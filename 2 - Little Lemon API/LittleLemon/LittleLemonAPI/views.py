@@ -9,8 +9,10 @@ Views for required API endpoints
 from copy import deepcopy
 
 from rest_framework import generics, viewsets, status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
 
 from django.contrib.auth.models import User, Group
 from django.shortcuts import get_object_or_404
@@ -19,22 +21,12 @@ from . import serializers
 from . import models
 
 
-class UserView(generics.CreateAPIView):
+class CreateUserView(generics.CreateAPIView):
     """Create a new user"""
 
     queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
-
-
-class SingleUserView(generics.RetrieveAPIView):
-    """View current user information"""
-
-    serializer_class = serializers.SingleUserSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self):
-        """Retrieve current user information"""
-        return self.request.user
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
 
 class MenuItemView(generics.ListCreateAPIView):
@@ -44,6 +36,7 @@ class MenuItemView(generics.ListCreateAPIView):
     serializer_class = serializers.MenuItemSerializer
     ordering_fields = ["price"]
     search_fields = ["category__title"]
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     def get_permissions(self):
         """Obtain permissions when a request is made"""
@@ -60,6 +53,7 @@ class SingleMenuItemView(generics.RetrieveAPIView):
 
     queryset = models.MenuItem.objects.all()
     serializer_class = serializers.MenuItemSerializer
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     def get_permissions(self):
         """Obtain permissions when a request is made"""
@@ -76,6 +70,7 @@ class CategoryView(generics.ListCreateAPIView):
 
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategorySerializer
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     def get_permissions(self):
         """Obtain permissions when a request is made"""
@@ -88,17 +83,18 @@ class CategoryView(generics.ListCreateAPIView):
 
 
 class CartView(generics.ListCreateAPIView):
-    """View current Cart"""
+    """View and add to current Cart"""
 
     queryset = models.Cart.objects.all()
     serializer_class = serializers.CartSerializer
     permission_classes = [IsAuthenticated]
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     def get_queryset(self):
         """View only the cart assigned to the current user"""
         return models.Cart.objects.all().filter(user=self.request.user)
 
-    def delete(self):
+    def delete(self, request):
         """Delete the Cart"""
         models.Cart.objects.all().filter(user=self.request.user).delete()
         return Response({"message": "Cart deleted successfully"}, status.HTTP_200_OK)
@@ -110,6 +106,7 @@ class OrderView(generics.ListCreateAPIView):
     queryset = models.Order.objects.all()
     serializer_class = serializers.OrderSerializer
     permission_classes = [IsAuthenticated]
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     def get_total_price(self, current_user):
         """Returns the total price of a cart assigned to a particular user"""
@@ -185,6 +182,7 @@ class SingleOrderView(generics.RetrieveUpdateAPIView):
     queryset = models.Order.objects.all()
     serializer_class = serializers.OrderSerializer
     permission_classes = [IsAuthenticated]
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     def update(self, request, *args, **kwargs):
         """Update order details"""
@@ -198,7 +196,10 @@ class SingleOrderView(generics.RetrieveUpdateAPIView):
 
 class ManagerGroupView(viewsets.ViewSet):
     "View and modify the Manager group"
+
     permission_classes = [IsAdminUser]
+    serializer_class = serializers.GroupSerializer
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     def list(self, request):
         """Display managers"""
@@ -207,9 +208,14 @@ class ManagerGroupView(viewsets.ViewSet):
 
         return Response(items.data)
 
+    @action(detail=False, methods=["post"])
     def create(self, request):
         """Add user to the manager group"""
-        user = get_object_or_404(User, username=request.data["username"])
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        username = serializer.validated_data["username"]
+        user = get_object_or_404(User, username=username)
         managers = Group.objects.get(name="Managers")
         managers.user_set.add(user)
 
@@ -218,6 +224,7 @@ class ManagerGroupView(viewsets.ViewSet):
             status.HTTP_201_CREATED,
         )
 
+    @action(detail=False, methods=["delete"])
     def destroy(self, request):
         """Remove a user from the manager group"""
         user = get_object_or_404(User, username=request.data["username"])
@@ -234,6 +241,8 @@ class DeliveryCrewView(viewsets.ViewSet):
     """View and modify the Delivery Crew group"""
 
     permission_classes = [IsAuthenticated]
+    serializer_class = serializers.GroupSerializer
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
     def list(self, request):
         """View the delivery crew"""
@@ -252,7 +261,11 @@ class DeliveryCrewView(viewsets.ViewSet):
                     {"message": "Error: Forbidden operation"}, status.HTTP_403_FORBIDDEN
                 )
 
-        user = get_object_or_404(User, username=request.data["username"])
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        username = serializer.validated_data["username"]
+        user = get_object_or_404(User, username=username)
         delivery_crew = Group.objects.get(name="Delivery Crew")
         delivery_crew.user_set.add(user)
 
