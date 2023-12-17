@@ -12,7 +12,7 @@ from . import views
 
 
 urlpatterns = [
-    path("create-user", views.CreateUserView.as_view()),
+    path("users", views.CreateUserView.as_view()),
     path("menu-items", views.MenuItemView.as_view()),
     path("menu-items/<int:pk>", views.SingleMenuItemView.as_view()),
     path("categories", views.CategoryView.as_view()),

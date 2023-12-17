@@ -36,7 +36,7 @@ This section outlines the accessible API endpoints:
 
 Permissions: [No Role Required]
 
--   `/api/create-user` (POST) - Creates a new user with name, email, and password
+-   `/api/users` (POST) - Creates a new user with name, email, and password
 
 Permissions: [Valid Users]
 
