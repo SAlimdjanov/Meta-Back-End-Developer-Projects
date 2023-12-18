@@ -1,6 +1,6 @@
 # Little Lemon API Project
 
-A fully functioning API project for a hypothetical restaurant called Little Lemon. Client application developers can use the APIs to develop web and mobile applications. People with different roles are able to browse, add and edit menu items, place orders, browse orders, assign delivery crew to orders and finally deliver the orders.
+A fully functioning API project for a hypothetical restaurant called Little Lemon. Client application developers can use the APIs= to develop web and mobile applications. People with different roles are able to browse, add and edit menu items, place orders, browse orders, assign delivery crew to orders and finally deliver the orders.
 
 ## Functionality
 
