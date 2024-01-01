@@ -17,7 +17,7 @@ media
 # Backup files
 *.bak
 
-# Virtual
+# Virtual envs
 django-env
 
 # Distribution/packaging
@@ -41,3 +41,6 @@ wheels/
 
 # DS_Store
 .DS_Store
+
+# User credentials
+my_credentials.py

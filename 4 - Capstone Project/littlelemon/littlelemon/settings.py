@@ -8,11 +8,24 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
+
+
+########## NOTE to Reviewers ##########
+
+Python 3.12.0 does not support the current version of mysqlclient so I had to downgrade mysqlclient
+to version 2.0.1. The MySQL extension on VSCode does not support connections with this version. Now,
+there is a descrepancy between the type of hashing algorithms used to authenticate attempts at
+connecting to the database. I assume the previous issues combined to prevent me from using the
+"root" user and null string password suggested by the course. Thus, I decided to use my personal
+user credentials.
+
 """
 
 
 from pathlib import Path
 
+# Import my username and password
+from .my_credentials import user
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -76,10 +89,16 @@ WSGI_APPLICATION = "littlelemon.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# CHANGE "USER" value to "root" and "PASSWORD" to "" on your local machine
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "littlelemon",
+        "USER": user["user_id"],
+        "PASSWORD": user["password"],
+        "HOST": "127.0.0.1",
+        "PORT": "3306",
+        "OPTIONS": {"init_command": "SET sql_mode='STRICT_TRANS_TABLES'"},
     }
 }
 
