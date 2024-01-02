@@ -20,7 +20,7 @@ class Menu(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return str(self.title)
+        return f"{self.title} : {str(self.price)}"
 
 
 class Booking(models.Model):
@@ -33,4 +33,4 @@ class Booking(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return str(self.name)
+        return f"name: {self.name} - guests: {self.no_of_guests} - date: {self.booking_date}"
